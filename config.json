@@ -1,0 +1,9 @@
+{
+	"api_key": "BLANKINSERTAPIKEY",
+	"premade_videos": {
+		"fake_video1_hash": [
+			"combined_1",
+			"combined_2"
+		]
+	}
+}

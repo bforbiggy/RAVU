@@ -3,6 +3,8 @@ using System.Text.Json.Nodes;
 
 public class Util
 {
+	public static Random randy = new Random();
+
 	/// <summary>
 	///  Read config data from config file and 
 	/// </summary>
@@ -10,7 +12,7 @@ public class Util
 	/// <param name="API_KEY"> Youtube API Key</param>
 	/// <param name="premadeVideos"> Dictionary containing videos already made</param>
 	/// <exception cref="Exception"></exception>
-	public static void loadConfig(string path, ref string API_KEY, ref Dictionary<String, HashSet<String>> premadeVideos)
+	public static void LoadConfig(string path, ref string API_KEY, ref Dictionary<String, HashSet<String>> premadeVideos)
 	{
 		// Find and read file as json
 		if (!File.Exists(path))
@@ -32,5 +34,17 @@ public class Util
 				premadeVideos[entry.Key].Add((string)match!);
 			}
 		}
+	}
+
+	/// <summary>
+	/// Picks a random file from a specified folder
+	/// </summary>
+	/// <param name="folderPath"> Path to folder </param>
+	/// <returns></returns>
+	public static string RandomFile(string folderPath)
+	{
+		string[] files = Directory.GetFiles(folderPath);
+		int index = randy.Next(files.Length);
+		return files[index];
 	}
 }

@@ -1,3 +1,9 @@
 .vscode/
 bin/
 obj/
+*.mp4
+
+left/
+right/
+ffmpeg.exe
+ffmpeg

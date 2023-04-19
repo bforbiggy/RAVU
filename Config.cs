@@ -36,21 +36,39 @@ public class Config
 		}
 	}
 
-	private string? api_key;
-	public string? API_KEY
+	private string? clientID;
+	public string CLIENTID
 	{
 		get
 		{
-			if (api_key is null)
+			if (clientID is null)
 			{
-				Console.Write("Enter youtube API key:");
-				api_key = Console.ReadLine();
+				Console.Write("Enter youtube client id key:");
+				clientID = Console.ReadLine();
 			}
-			return api_key!;
+			return clientID!;
 		}
 		set
 		{
-			api_key = value;
+			clientID = value;
+		}
+	}
+
+	private string? clientSecret;
+	public string CLIENTSECRET
+	{
+		get
+		{
+			if (clientSecret is null)
+			{
+				Console.Write("Enter youtube client secret key:");
+				clientSecret = Console.ReadLine();
+			}
+			return clientSecret!;
+		}
+		set
+		{
+			clientSecret = value;
 		}
 	}
 

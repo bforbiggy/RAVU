@@ -1,5 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
+using Google.Apis.YouTube.v3;
 
 public class Util
 {
@@ -39,5 +42,24 @@ public class Util
 		string mapping = "-map \"[v]\" -map \"[a]\"";
 		command += $"ffmpeg {input} {filter} {mapping} {output}";
 		return command;
+	}
+
+	public static YouTubeService connectYoutube(string CLIENTID, string CLIENTSECRET)
+	{
+		var credentialTask = GoogleWebAuthorizationBroker.AuthorizeAsync(
+			new ClientSecrets { ClientId = CLIENTID, ClientSecret = CLIENTSECRET, },
+			new[] { YouTubeService.Scope.YoutubeUpload },
+			"user",
+			CancellationToken.None
+		);
+		credentialTask.Wait();
+
+		var youtubeService = new YouTubeService(new BaseClientService.Initializer()
+		{
+			HttpClientInitializer = credentialTask.Result,
+			ApplicationName = "RAVU"
+		});
+
+		return youtubeService;
 	}
 }

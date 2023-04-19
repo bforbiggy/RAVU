@@ -5,46 +5,39 @@ public class Util
 {
 	public static Random randy = new Random();
 
-	/// <summary>
-	///  Read config data from config file and 
-	/// </summary>
-	/// <param name="path"> Path to target file </param>
-	/// <param name="API_KEY"> Youtube API Key</param>
-	/// <param name="premadeVideos"> Dictionary containing videos already made</param>
-	/// <exception cref="Exception"></exception>
-	public static void LoadConfig(string path, ref string API_KEY, ref Dictionary<String, HashSet<String>> premadeVideos)
+	public static Config loadConfig(string path)
 	{
-		// Find and read file as json
-		if (!File.Exists(path))
-			throw new Exception("No config.json file found.");
-		string text = File.ReadAllText(path);
-		JsonNode root = JsonObject.Parse(text) ?? throw new Exception("Invalid config file format.");
+		string jsontext = File.ReadAllText(path);
+		Config config = JsonSerializer.Deserialize<Config>(jsontext) ?? new Config();
+		config.Premade = config.Premade ?? new Dictionary<string, HashSet<string>>();
+		return config;
+	}
 
-		// Parse API key
-		if (root["api_key"] != null)
-			API_KEY = (string)root["api_key"]!;
-
-		// Parse videos already made
-		JsonObject premade = (JsonObject?)root["premade_videos"] ?? throw new Exception("No premade videos in config.");
-		foreach (var entry in premade)
-		{
-			premadeVideos[entry.Key] = new HashSet<string>();
-			foreach (var match in entry.Value!.AsArray())
-			{
-				premadeVideos[entry.Key].Add((string)match!);
-			}
-		}
+	public static void saveConfig(string path, Config config)
+	{
+		string jsonString = JsonSerializer.Serialize(config);
+		File.WriteAllText("config.json", jsonString);
 	}
 
 	/// <summary>
 	/// Picks a random file from a specified folder
 	/// </summary>
-	/// <param name="folderPath"> Path to folder </param>
+	/// <param name="folder"> Path to folder </param>
 	/// <returns></returns>
-	public static string RandomFile(string folderPath)
+	public static string RandomFile(string folder)
 	{
-		string[] files = Directory.GetFiles(folderPath);
+		string[] files = Directory.GetFiles(folder);
 		int index = randy.Next(files.Length);
 		return files[index];
+	}
+
+	public static string CombineCommand(string a, string b, string output = "output.mp4")
+	{
+		string command = "/C ";
+		string input = $"-i \"{a}\" -i \"{b}\"";
+		string filter = "-filter_complex \"[0:v]scale=1280:720,setsar=1[v0];[1:v]scale=1280:720,setsar=1[v1];[v0][0:a][v1][1:a]concat=n=2:v=1:a=1[v][a]\"";
+		string mapping = "-map \"[v]\" -map \"[a]\"";
+		command += $"ffmpeg {input} {filter} {mapping} {output}";
+		return command;
 	}
 }

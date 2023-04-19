@@ -1,22 +1,21 @@
-﻿using System.Text.Json.Nodes;
+﻿using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
-// Parse and load config
-string API_KEY = null!;
-Dictionary<String, HashSet<String>> premadeVideos = new Dictionary<String, HashSet<String>>();
-try
-{
-	Util.LoadConfig(@"config.json", ref API_KEY, ref premadeVideos);
-}
-catch (Exception) { }
+// Load config
+Config config = Util.loadConfig("config.json");
 
 // Randomly select video from A and B folder
-// string left = Util.RandomFile("left");
-// string right = Util.RandomFile("right");
+string a = Util.RandomFile(config.LEFT);
+string b = Util.RandomFile(config.RIGHT);
 
 // Combine videos to output
-string command = "/C ";
-command += $"ffmpeg -i \"concat:family.mp4|creature.mp4\" -c:a copy -c:v copy output.mkv";
-Console.WriteLine(command);
-System.Diagnostics.Process.Start("cmd.exe", command);
+string command = Util.CombineCommand(a, b);
+Process p = System.Diagnostics.Process.Start("cmd.exe", command);
+p.WaitForExit();
+p.Close();
 
 // Upload video
+
+// Save config
+Util.saveConfig("config.json", config);
